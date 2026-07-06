@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+title: "Application of Finite Element to a Simplified Neutron Transport Model in Two-Dimensional Geometry"
+message: "If you use this software, please cite the accompanying Master's dissertation."
+authors:
+  - family-names: Haho
+    given-names: Nizar
+repository-code: https://github.com/Anicarmer/Application-of-Finite-Element-to-a-Simplified-Neutron-Transport-Model-in-Two-Dimensional-Geometry
+license: MIT
