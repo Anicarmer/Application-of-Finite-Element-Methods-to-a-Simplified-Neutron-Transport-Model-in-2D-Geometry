@@ -79,6 +79,16 @@ Master's Program in Computational Physics
 
 ---
 
+## Citation
+
+@misc{haho2026github,
+  author       = {Nizar Haho},
+  title        = {Application of Finite Element to a Simplified Neutron Transport Model in Two-Dimensional Geometry},
+  year         = {2026},
+  howpublished = {\url{https://github.com/Anicarmer/Application-of-Finite-Element-to-a-Simplified-Neutron-Transport-Model-in-Two-Dimensional-Geometry}},
+  note         = {Python implementation accompanying the Master's dissertation}
+}
+
 ## License
 
 This project is released for academic and educational purposes. Please cite the corresponding dissertation if you use or reference this work.
