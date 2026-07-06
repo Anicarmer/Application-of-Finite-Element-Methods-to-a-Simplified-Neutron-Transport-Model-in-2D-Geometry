@@ -6,7 +6,10 @@ This repository contains the Python implementation developed for my Master's dis
 
 **Application of Finite Element to a Simplified Neutron Transport Model in Two-Dimensional Geometry**
 
-The project presents a finite element solver for a simplified stationary neutron transport equation in two dimensions. The implementation is used to validate the numerical method against an analytical solution, study mesh convergence, investigate the influence of the Breit–Wigner radiative capture cross-section, and analyze the effect of different transport directions on the neutron flux.
+The project presents a finite-element solver for a simplified, stationary, two-dimensional neutron transport equation. The implementation is used to validate the numerical method against an analytical solution, study mesh convergence, investigate the influence of the Breit–Wigner radiative capture cross-section, and analyze the effect of different transport directions on the neutron flux.
+
+<img width="700" height="794" alt="fem_solution" src="https://github.com/user-attachments/assets/f91b27bb-ac74-4df1-964a-0fead3bab83f" />
+
 
 ---
 
@@ -46,7 +49,7 @@ pip install numpy matplotlib
 
 ## Running the Code
 
-Simply execute:
+Execute:
 
 ```bash
 Neutron Transport Simulation Python.py
