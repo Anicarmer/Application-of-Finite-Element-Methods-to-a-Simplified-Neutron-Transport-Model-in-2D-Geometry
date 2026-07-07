@@ -1,10 +1,10 @@
-# Application of Finite Element to a Simplified Neutron Transport Model in Two-Dimensional Geometry
+# Application of Finite Element Methods to a Simplified Neutron Transport Model in Two-Dimensional Geometry
 
 ## Overview
 
 This repository contains the Python implementation developed for my Master's dissertation entitled:
 
-**Application of Finite Element to a Simplified Neutron Transport Model in Two-Dimensional Geometry**
+**Application of Finite Element Methods to a Simplified Neutron Transport Model in Two-Dimensional Geometry**
 
 The project presents a finite-element solver for a simplified, stationary, two-dimensional neutron transport equation. The implementation is used to validate the numerical method against an analytical solution, study mesh convergence, investigate the influence of the Breit–Wigner radiative capture cross-section, and analyze the effect of different transport directions on the neutron flux.
 
@@ -71,7 +71,7 @@ The program will:
 
 This implementation accompanies the Master's dissertation:
 
-> **Application of Finite Element to a Simplified Neutron Transport Model in Two-Dimensional Geometry**
+> **Application of Finite Element Methods to a Simplified Neutron Transport Model in Two-Dimensional Geometry**
 
 Faculty of Sciences of El Jadida
 Chouaïb Doukkali University
@@ -85,7 +85,7 @@ Master's Program in Computational Physics
   author       = {Nizar Haho},
   title        = {Application of Finite Element to a Simplified Neutron Transport Model in Two-Dimensional Geometry},
   year         = {2026},
-  howpublished = {\url{https://github.com/Anicarmer/Application-of-Finite-Element-to-a-Simplified-Neutron-Transport-Model-in-Two-Dimensional-Geometry}},
+  howpublished = {\url{https://github.com/Anicarmer/Application-of-Finite-Element-Methods-to-a-Simplified-Neutron-Transport-Model-in-2D-Geometry}},
   note         = {Python implementation accompanying the Master's dissertation}
 }
 
