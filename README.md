@@ -9,6 +9,14 @@ This repository contains the Python implementation developed for my Master's dis
 The project presents a finite-element solver for a simplified, stationary, two-dimensional neutron transport equation. The implementation is used to validate the numerical method against an analytical solution, study mesh convergence, investigate the influence of the Breit–Wigner radiative capture cross-section, and analyze the effect of different transport directions on the neutron flux.
 
 <img width="700" height="794" alt="fem_solution" src="https://github.com/user-attachments/assets/f91b27bb-ac74-4df1-964a-0fead3bab83f" />
+<img width="1536" height="802" alt="Convergence Study" src="https://github.com/user-attachments/assets/a0f39425-976d-4b9b-bd19-1a9aa9612a1c" />
+<img width="1536" height="802" alt="Absorption cross section" src="https://github.com/user-attachments/assets/8a28884d-3972-4b81-8a5a-2fe3a3c4611e" />
+<img width="1536" height="802" alt="Error norms vs energy" src="https://github.com/user-attachments/assets/7fcd515d-a9cc-4d55-b26f-df0a647f0292" />
+<img width="1536" height="802" alt="Maximum nodal value vs energy" src="https://github.com/user-attachments/assets/555bc620-4e85-49e2-8ad5-ef4e4a9cf484" />
+<img width="1536" height="802" alt="FEM solution for varying transport direction" src="https://github.com/user-attachments/assets/19cef68b-e130-4d53-9702-75e08fd0e0fa" />
+<img width="1536" height="802" alt="Exact solution profiles for varying transport direction" src="https://github.com/user-attachments/assets/4ea50e34-994e-4df8-bedc-7ab1433899f5" />
+<img width="1536" height="802" alt="Error norms vs transport direction" src="https://github.com/user-attachments/assets/3737e7f7-af7a-422d-8683-4fc8cedca33a" />
+
 
 
 ---
