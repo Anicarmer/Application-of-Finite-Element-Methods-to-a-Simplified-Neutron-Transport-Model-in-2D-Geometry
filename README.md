@@ -46,11 +46,12 @@ The code requires Python 3 and the following packages:
 
 * NumPy
 * Matplotlib
+* Pandas
 
 Install the dependencies using:
 
 ```bash
-pip install numpy matplotlib
+pip install numpy matplotlib pandas
 ```
 
 ---
