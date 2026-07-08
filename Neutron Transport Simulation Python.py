@@ -1,6 +1,5 @@
-from typing import Any
-
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 
@@ -254,83 +253,98 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
+RESONANCE_FILE = "resonance_data_cleaned.csv"
 
-E_r     = 5.6
-Gamma   = 0.64192
-Gamma_g = 0.0200
-sigma_0 = 12.0675315
+res       = pd.read_csv(RESONANCE_FILE)
+Er_arr    = res["Resonance Energy (eV)"].to_numpy()
+Gtot_arr  = res["Total Width (eV)"].to_numpy()
+Gn_arr    = res["Gamma-N (eV)"].to_numpy()
+Ggam_arr  = res["Gamma-Gamma (eV)"].to_numpy()
 
+n_res = len(Er_arr)
 
-def sigma_bw(E):
-    """Breit-Wigner radiative capture cross-section (barn)."""
-    return (sigma_0 * (Gamma_g / Gamma)
-            * np.sqrt(E_r / E)
-            / (1.0 + ((E - E_r) / (Gamma / 2.0))**2))
-
-
-sigma_peak = sigma_bw(E_r)
-
-
-def sigma_norm(E):
-    """Normalized cross-section: sigma_tilde = sigma_bw(E) / sigma_bw(E_r)."""
-    return sigma_bw(E) / sigma_peak
+h_planck = 6.62607015e-34
+m_n      = 1.67492749804e-27
+eV_to_J  = 1.602176634e-19
+BARN     = 1e-28
+G_SPIN   = 0.5
 
 
-E_table = np.array([0.1, 0.5, 1.0, 2.0, 4.0, 5.6, 7.0, 8.0, 9.0, 10.0])
+def lambda_r_squared_barn(Er_eV):
+    """Squared de Broglie wavelength at resonance energy |Er|, in barns."""
+    Er_J = np.abs(Er_eV) * eV_to_J
+    lam  = h_planck / np.sqrt(2.0 * m_n * Er_J)
+    return (lam ** 2) / BARN
+
+
+lambda2_arr = lambda_r_squared_barn(Er_arr)
 
 print("\n" + "=" * 60)
-print("Breit-Wigner cross-section parameters")
-print(f"  E_r      = {E_r} eV")
-print(f"  Gamma    = {Gamma} eV")
-print(f"  Gamma_g  = {Gamma_g} eV")
-print(f"  sigma_0  = {sigma_0} barn")
-print(f"  sigma(E_r) = {sigma_peak:.6f} barn  [normalization]")
+print("Multi-resonance Breit-Wigner absorption cross-section")
+print(f"  Number of resonances : {n_res}")
+print(f"  Energy range         : {Er_arr.min():.2f} to {Er_arr.max():.2f} eV")
+print(f"  Statistical factor g : {G_SPIN} (averaged, J=3/J=4 states)")
 print("=" * 60)
-print(f"{'E (eV)':>10}  {'sigma_bw (barn)':>16}  {'sigma_tilde':>12}")
-print("-" * 42)
+
+
+def sigma_absorption(E):
+    """
+    Total radiative-capture (absorption) cross-section (barn), summed
+    incoherently over all resolved resonances.
+
+    E : scalar or ndarray, incident neutron energy (eV)
+    """
+    E = np.atleast_1d(np.asarray(E, dtype=float))
+    total = np.zeros_like(E)
+    for Er_i, Gtot_i, Gn_i, Gg_i, l2_i in zip(
+            Er_arr, Gtot_arr, Gn_arr, Ggam_arr, lambda2_arr):
+        denom = (E - Er_i) ** 2 + (Gtot_i / 2.0) ** 2
+        total += (l2_i * G_SPIN / (4.0 * np.pi)) * Gn_i * Gg_i / denom
+    return total if total.size > 1 else total[0]
+
+
+E_table = np.array([0.05, 0.29, 1.14, 5.6, 8.78, 20.1, 40.5, 60.2, 80.4, 86.9, 100.0])
+
+print(f"{'E (eV)':>10}  {'sigma_a (barn)':>16}")
+print("-" * 30)
 for E in E_table:
-    print(f"{E:>10.1f}  {sigma_bw(E):>16.6e}  {sigma_norm(E):>12.6f}")
+    print(f"{E:>10.2f}  {sigma_absorption(E):>16.6e}")
 
-E_lo   = np.linspace(0.1, E_r - 0.5, 200)
-E_hi   = np.linspace(E_r - 0.5, 10.0, 500)
-E_plot = np.concatenate([E_lo, E_hi])
+E_MIN, E_MAX = 0.05, 100.0
 
-fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+E_background = np.linspace(E_MIN, E_MAX, 4000)
 
-axes[0].plot(E_plot, sigma_bw(E_plot), 'b-', lw=1.5)
-axes[0].axvline(E_r, color='r', ls='--', label=f'$E_r = {E_r}$ eV')
-axes[0].scatter(E_table, sigma_bw(E_table), color='k', zorder=5,
-                label='Table points')
-axes[0].set_xlabel('$E$ (eV)')
-axes[0].set_ylabel('$\\sigma_\\gamma(E)$ (barn)')
-axes[0].set_title('Breit-Wigner radiative capture cross-section')
-axes[0].legend()
-axes[0].grid(True, ls='--', alpha=0.4)
+refined_blocks = [E_background]
+for Er_i, Gtot_i in zip(Er_arr, Gtot_arr):
+    if Er_i <= 0:
+        continue
+    half_width = max(5.0 * Gtot_i, 0.05)
+    lo = max(E_MIN, Er_i - half_width)
+    hi = min(E_MAX, Er_i + half_width)
+    refined_blocks.append(np.linspace(lo, hi, 60))
 
-axes[1].plot(E_plot, sigma_norm(E_plot), 'b-', lw=1.5)
-axes[1].axvline(E_r, color='r', ls='--', label=f'$E_r = {E_r}$ eV')
-axes[1].axhline(1.0, color='gray', ls=':', lw=1)
-axes[1].scatter(E_table, sigma_norm(E_table), color='k', zorder=5,
-                label='Table points')
-axes[1].set_xlabel('$E$ (eV)')
-axes[1].set_ylabel('$\\tilde{\\sigma}(E)$')
-axes[1].set_title(
-    r'Normalized cross-section $\tilde{\sigma}(E)=\sigma_\gamma(E)'
-    r'/\sigma_\gamma(E_r)$')
-axes[1].legend()
-axes[1].grid(True, ls='--', alpha=0.4)
+E_plot = np.unique(np.concatenate(refined_blocks))
+E_plot = E_plot[(E_plot >= E_MIN) & (E_plot <= E_MAX)]
 
+sigma_vals = sigma_absorption(E_plot)
+
+fig, ax = plt.subplots(figsize=(9, 5))
+ax.semilogy(E_plot, sigma_vals, 'b-', lw=0.8)
+ax.scatter(E_table, sigma_absorption(E_table), color='k', zorder=5,
+           s=15, label='Table points')
+ax.set_xlabel('$E$ (eV)')
+ax.set_ylabel('$\\sigma_a(E)$ (barn)')
+ax.set_title(f'Full resonance spectrum ({n_res} resonances)\n'
+             'Radiative-capture (absorption) cross-section')
+ax.legend(fontsize=9)
+ax.grid(True, which='both', ls='--', alpha=0.4)
 plt.tight_layout()
 plt.show()
 
-
 N_BW = 32
+N_ENERGY_FEM = 200
 
-E_fem = np.concatenate([
-    np.linspace(0.1, E_r - 1.0, 30),
-    np.linspace(E_r - 1.0, E_r + 1.0, 60),
-    np.linspace(E_r + 1.0, 10, 30),
-])
+E_fem = np.geomspace(E_MIN, E_MAX, N_ENERGY_FEM)
 
 max_errors_bw = []
 l2_errors_bw  = []
@@ -338,7 +352,7 @@ h1_errors_bw  = []
 max_uh_bw     = []
 
 for E in E_fem:
-    sig = sigma_norm(E)
+    sig = sigma_absorption(E)
     _, _, U_bw, me, l2e, h1e = solve_transport(N_BW, sig, MU, NU)
     max_errors_bw.append(me)
     l2_errors_bw.append(l2e)
@@ -350,40 +364,42 @@ l2_errors_bw  = np.array(l2_errors_bw)
 h1_errors_bw  = np.array(h1_errors_bw)
 max_uh_bw     = np.array(max_uh_bw)
 
-plt.figure(figsize=(7, 5))
-plt.semilogy(E_fem, max_errors_bw, '-', label='Max error')
-plt.semilogy(E_fem, l2_errors_bw,  '-', label='$L^2$ error')
-plt.semilogy(E_fem, h1_errors_bw,  '-', label='$H^1$ seminorm')
-plt.axvline(E_r, color='r', ls='--', label=f'$E_r = {E_r}$ eV')
+plt.figure(figsize=(8, 5))
+plt.loglog(E_fem, max_errors_bw, '-', label='Max error')
+plt.loglog(E_fem, l2_errors_bw,  '-', label='$L^2$ error')
+plt.loglog(E_fem, h1_errors_bw,  '-', label='$H^1$ seminorm')
+for Er_i in Er_arr[Er_arr > 0]:
+    plt.axvline(Er_i, color='r', ls='--', lw=0.3, alpha=0.25)
 plt.xlabel('$E$ (eV)')
 plt.ylabel('Error')
-plt.title(f'Error norms vs energy  ($N={N_BW}$, $q={Q}$,  '
+plt.title(f'Error norms across the full resonance spectrum\n'
+          f'($N={N_BW}$, $q={Q}$,  '
           r'$\mathbf{b}=\frac{1}{\sqrt{2}}(1,1)$)')
 plt.legend()
 plt.grid(True, which='both', ls='--', alpha=0.4)
 plt.tight_layout()
 plt.show()
 
-plt.figure(figsize=(7, 4))
-plt.plot(E_fem, max_uh_bw, 'b-', label='$\\max(u_h)$')
-plt.axvline(E_r, color='r', ls='--', label=f'$E_r = {E_r}$ eV')
+plt.figure(figsize=(8, 4.5))
+plt.semilogx(E_fem, max_uh_bw, 'b-', label='$\\max(u_h)$')
 plt.xlabel('$E$ (eV)')
 plt.ylabel('$\\max(u_h)$')
-plt.title(f'Maximum nodal value vs energy  ($N={N_BW}$, $q={Q}$)')
+plt.title(f'Maximum nodal value across the full resonance spectrum\n'
+          f'($N={N_BW}$, $q={Q}$)')
 plt.legend()
-plt.grid(True, ls='--', alpha=0.4)
+plt.grid(True, which='both', ls='--', alpha=0.4)
 plt.tight_layout()
 plt.show()
 
-print(f"\nBreit-Wigner FEM study:  N = {N_BW},  q = {Q},  "
+print(f"\nMulti-resonance Breit-Wigner FEM study:  N = {N_BW},  q = {Q},  "
       f"b = (1/sqrt(2), 1/sqrt(2))")
-print(f"{'E (eV)':>8}  {'sigma_tilde':>12}  {'Max error':>12}  "
+print(f"{'E (eV)':>8}  {'sigma_a (barn)':>16}  {'Max error':>12}  "
       f"{'L2 error':>12}  {'H1 seminorm':>12}  {'max(u_h)':>10}")
-print("-" * 76)
+print("-" * 82)
 for E in E_table:
-    sig = sigma_norm(E)
+    sig = sigma_absorption(E)
     _, _, U_bw, me, l2e, h1e = solve_transport(N_BW, sig, MU, NU)
-    print(f"{E:>8.1f}  {sig:>12.6f}  {me:>12.6e}  "
+    print(f"{E:>8.2f}  {sig:>16.6e}  {me:>12.6e}  "
           f"{l2e:>12.6e}  {h1e:>12.6e}  {np.max(U_bw):>10.6f}")
 
 
