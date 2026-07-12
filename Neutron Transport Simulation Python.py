@@ -22,10 +22,9 @@ def exact_solution(x, y, sigma, mu=MU, nu=NU):
     else:
         tau = np.minimum(x / mu, y / nu)
 
-    if np.isclose(sigma, 0.0):
+    if sigma == 0.0:
         return Q * tau
-    return (Q / sigma) * (1.0 - np.exp(-sigma * tau))
-
+    return (Q / sigma) * (-np.expm1(-sigma * tau))
 
 def exact_gradient(xq, yq, sigma, mu=MU, nu=NU):
     if np.isclose(mu, 0.0):
@@ -35,10 +34,7 @@ def exact_gradient(xq, yq, sigma, mu=MU, nu=NU):
     else:
         tau = np.minimum(xq / mu, yq / nu)
 
-    if np.isclose(sigma, 0.0):
-        dudt = Q * np.ones_like(tau)
-    else:
-        dudt = Q * np.exp(-sigma * tau)
+    dudt = Q * np.exp(-sigma * tau)
 
     if np.isclose(mu, 0.0):
         grad_x = np.zeros_like(dudt)
@@ -271,8 +267,8 @@ G_SPIN   = 0.5
 
 
 def lambda_r_squared_barn(Er_eV):
-    """Squared de Broglie wavelength at resonance energy |Er|, in barns."""
-    Er_J = np.abs(Er_eV) * eV_to_J
+    """Squared de Broglie wavelength at resonance energy Er, in barns."""
+    Er_J = Er_eV * eV_to_J
     lam  = h_planck / np.sqrt(2.0 * m_n * Er_J)
     return (lam ** 2) / BARN
 
@@ -303,16 +299,16 @@ def sigma_absorption(E):
     return total if total.size > 1 else total[0]
 
 
-E_table = np.array([0.05, 0.29, 1.14, 5.6, 8.78, 20.1, 40.5, 60.2, 80.4, 86.9, 100.0])
+E_table = np.array([1e-3, 0.05, 0.29, 1.14, 5.6, 8.78, 20.1, 40.5, 60.2, 80.4, 86.9, 100.0, 1e3, 1e4, 1e5, 1e6])
 
 print(f"{'E (eV)':>10}  {'sigma_a (barn)':>16}")
 print("-" * 30)
 for E in E_table:
     print(f"{E:>10.2f}  {sigma_absorption(E):>16.6e}")
 
-E_MIN, E_MAX = 0.05, 100.0
+E_MIN, E_MAX = 1e-3, 1e6
 
-E_background = np.linspace(E_MIN, E_MAX, 4000)
+E_background = np.geomspace(E_MIN, E_MAX, 4000)
 
 refined_blocks = [E_background]
 for Er_i, Gtot_i in zip(Er_arr, Gtot_arr):
@@ -321,7 +317,7 @@ for Er_i, Gtot_i in zip(Er_arr, Gtot_arr):
     half_width = max(5.0 * Gtot_i, 0.05)
     lo = max(E_MIN, Er_i - half_width)
     hi = min(E_MAX, Er_i + half_width)
-    refined_blocks.append(np.linspace(lo, hi, 60))
+    refined_blocks.append(np.geomspace(lo, hi, 60))
 
 E_plot = np.unique(np.concatenate(refined_blocks))
 E_plot = E_plot[(E_plot >= E_MIN) & (E_plot <= E_MAX)]
@@ -333,6 +329,7 @@ ax.semilogy(E_plot, sigma_vals, 'b-', lw=0.8)
 ax.scatter(E_table, sigma_absorption(E_table), color='k', zorder=5,
            s=15, label='Table points')
 ax.set_xlabel('$E$ (eV)')
+ax.set_xscale('log')
 ax.set_ylabel('$\\sigma_a(E)$ (barn)')
 ax.set_title(f'Full resonance spectrum ({n_res} resonances)\n'
              'Radiative-capture (absorption) cross-section')
