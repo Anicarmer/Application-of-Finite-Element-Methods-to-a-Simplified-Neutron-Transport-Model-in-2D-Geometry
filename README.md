@@ -8,14 +8,14 @@ This repository contains the Python implementation developed for my Master's dis
 
 The project presents a finite-element solver for a simplified, stationary, two-dimensional neutron transport equation. The implementation is used to validate the numerical method against an analytical solution, study mesh convergence, investigate the influence of the Breit–Wigner radiative capture cross-section, and analyze the effect of different transport directions on the neutron flux.
 
-<img width="700" height="794" alt="fem_solution" src="https://github.com/user-attachments/assets/f91b27bb-ac74-4df1-964a-0fead3bab83f" />
-<img width="1536" height="802" alt="Convergence Study" src="https://github.com/user-attachments/assets/a0f39425-976d-4b9b-bd19-1a9aa9612a1c" />
-<img width="1536" height="802" alt="Absorption cross section" src="https://github.com/user-attachments/assets/8a28884d-3972-4b81-8a5a-2fe3a3c4611e" />
-<img width="1536" height="802" alt="Error norms vs energy" src="https://github.com/user-attachments/assets/7fcd515d-a9cc-4d55-b26f-df0a647f0292" />
-<img width="1536" height="802" alt="Maximum nodal value vs energy" src="https://github.com/user-attachments/assets/555bc620-4e85-49e2-8ad5-ef4e4a9cf484" />
-<img width="1536" height="802" alt="FEM solution for varying transport direction" src="https://github.com/user-attachments/assets/19cef68b-e130-4d53-9702-75e08fd0e0fa" />
-<img width="1536" height="802" alt="Exact solution profiles for varying transport direction" src="https://github.com/user-attachments/assets/4ea50e34-994e-4df8-bedc-7ab1433899f5" />
-<img width="1536" height="802" alt="Error norms vs transport direction" src="https://github.com/user-attachments/assets/3737e7f7-af7a-422d-8683-4fc8cedca33a" />
+<img width="800" height="794" alt="FEM Approximation" src="https://github.com/user-attachments/assets/1a08eccb-80fc-4094-8f63-afc8b4037a7e" />
+<img width="1536" height="802" alt="Convergence Study" src="https://github.com/user-attachments/assets/eee8eb2b-a0e2-4646-807d-0277b9420115" />
+<img width="1536" height="802" alt="Absorption cross section" src="https://github.com/user-attachments/assets/7fae6bb6-ddf1-4b97-bf4b-a984307fcd10" />
+<img width="1536" height="802" alt="Error norms vs energy" src="https://github.com/user-attachments/assets/e646ed60-4860-48a7-b979-0af12d4df14b" />
+<img width="1536" height="802" alt="Maximum nodal value vs energy" src="https://github.com/user-attachments/assets/c439002d-99e1-454e-8327-402391161f19" />
+<img width="1536" height="802" alt="FEM solution for varying transport direction" src="https://github.com/user-attachments/assets/34877771-9d55-4ffb-aa88-0c8cc9334887" />
+<img width="1536" height="802" alt="Exact solution profiles for varying transport direction" src="https://github.com/user-attachments/assets/2d6b890a-2fa5-4b16-a2a4-3588a3f8b36b" />
+<img width="1536" height="802" alt="Error norms vs transport direction" src="https://github.com/user-attachments/assets/74818b24-3c0b-46ed-81fa-c9a14d12af89" />
 
 
 
